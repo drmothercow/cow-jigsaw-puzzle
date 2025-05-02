@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cow Jigsaw Puzzle</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f2f2f2;
+    }
+    #puzzle {
+      width: 450px;
+      height: 450px;
+      margin: 20px auto;
+      position: relative;
+      border: 2px solid #333;
+    }
+    .piece {
+      width: 150px;
+      height: 150px;
+      position: absolute;
+      background-image: url('cow.png'); /* Update path to image */
+      background-size: 450px 450px;
+      border: 1px solid #999;
+      cursor: move;
+    }
+  </style>
+</head>
+<body>
+  <h2>Cow Jigsaw Puzzle</h2>
+  <div id="puzzle"></div>
+
+  <script>
+    const puzzle = document.getElementById('puzzle');
+    const size = 3;
+    let pieces = [];
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const div = document.createElement('div');
+        div.classList.add('piece');
+        div.style.left = Math.random() * 300 + 'px';
+        div.style.top = Math.random() * 300 + 'px';
+        div.style.backgroundPosition = `-${x * 150}px -${y * 150}px`;
+        div.dataset.correctX = x * 150;
+        div.dataset.correctY = y * 150;
+
+        div.draggable = true;
+        div.addEventListener('dragstart', dragStart);
+        div.addEventListener('dragend', dragEnd);
+
+        puzzle.appendChild(div);
+        pieces.push(div);
+      }
+    }
+
+    function dragStart(e) {
+      this.style.zIndex = 1000;
+      e.dataTransfer.setData('text/plain', pieces.indexOf(this));
+    }
+
+    function dragEnd(e) {
+      this.style.zIndex = '';
+      let x = parseInt(this.style.left);
+      let y = parseInt(this.style.top);
+
+      x = Math.round(x / 150) * 150;
+      y = Math.round(y / 150) * 150;
+
+      this.style.left = `${x}px`;
+      this.style.top = `${y}px`;
+
+      checkCompletion();
+    }
+
+    function checkCompletion() {
+      const isComplete = pieces.every(piece => {
+        return (
+          parseInt(piece.style.left) === parseInt(piece.dataset.correctX) &&
+          parseInt(piece.style.top) === parseInt(piece.dataset.correctY)
+        );
+      });
+      if (isComplete) alert('Puzzle Completed!');
+    }
+  </script>
+</body>
+</html>
